@@ -28,6 +28,10 @@ The script will:
 3. Warn about any existing files (which will NOT be overwritten)
 4. Ask for confirmation before proceeding
 
+## Preview
+
+Want to see what gets created before running it? Check out the [`examples/`](examples/) folder to see all 11 CSS files with their full content.
+
 ## Files Created
 
 | File | Purpose |
