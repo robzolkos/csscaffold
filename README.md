@@ -32,7 +32,8 @@ The script will:
 
 | File | Purpose |
 |------|---------|
-| `_global.css` | CSS custom properties and variables |
+| `_global.css` | Global variables (spacing, text, borders, shadows, etc.) |
+| `colors.css` | Color system and palette |
 | `base.css` | Base element styles |
 | `buttons.css` | Button styles |
 | `dialog.css` | Modal/dialog styles |
@@ -46,8 +47,9 @@ The script will:
 ## What You Get
 
 - A `reset.css` with a modern CSS reset (the only file with actual styles)
+- A `colors.css` template showing how to organize your color system
 - `@layer` declarations for CSS cascade control
-- Commented-out examples showing what might go in each file
+- Commented-out examples following fizzy's patterns
 - A sensible file organization to build on
 
 The rest is up to you.
