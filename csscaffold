@@ -70,7 +70,7 @@ create_file() {
 
   if [[ -f "$filepath" ]]; then
     echo "Skipped: $file (already exists)"
-    ((skipped++))
+    ((++skipped))
     return
   fi
 
@@ -411,7 +411,7 @@ NAV_CSS
   esac
 
   echo "Created: $file"
-  ((created++))
+  ((++created))
 }
 
 for file in "${CSS_FILES[@]}"; do
