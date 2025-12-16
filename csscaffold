@@ -1,0 +1,422 @@
+#!/usr/bin/env bash
+
+set -e
+
+CSS_FILES=(
+  "_global.css"
+  "base.css"
+  "buttons.css"
+  "dialog.css"
+  "flash.css"
+  "inputs.css"
+  "layout.css"
+  "nav.css"
+  "reset.css"
+  "utilities.css"
+)
+
+STYLESHEETS_DIR="app/assets/stylesheets"
+
+# Check if we're in a Rails app
+if [[ ! -f "Gemfile" ]] || ! grep -q "rails" Gemfile 2>/dev/null; then
+  echo "Error: Not in a Rails application directory."
+  echo "Please run this from the root of a Rails project."
+  exit 1
+fi
+
+if [[ ! -d "$STYLESHEETS_DIR" ]]; then
+  echo "Error: $STYLESHEETS_DIR directory not found."
+  exit 1
+fi
+
+echo "This will create the following CSS files in $STYLESHEETS_DIR:"
+echo ""
+for file in "${CSS_FILES[@]}"; do
+  echo "  - $file"
+done
+echo ""
+
+# Check for existing files
+existing_files=()
+for file in "${CSS_FILES[@]}"; do
+  if [[ -f "$STYLESHEETS_DIR/$file" ]]; then
+    existing_files+=("$file")
+  fi
+done
+
+if [[ ${#existing_files[@]} -gt 0 ]]; then
+  echo "Warning: The following files already exist and will NOT be overwritten:"
+  for file in "${existing_files[@]}"; do
+    echo "  - $file"
+  done
+  echo ""
+fi
+
+read -p "Proceed? (y/N) " -n 1 -r
+echo ""
+
+if [[ ! $REPLY =~ ^[Yy]$ ]]; then
+  echo "Aborted."
+  exit 0
+fi
+
+# Create files
+created=0
+skipped=0
+
+create_file() {
+  local file="$1"
+  local filepath="$STYLESHEETS_DIR/$file"
+
+  if [[ -f "$filepath" ]]; then
+    echo "Skipped: $file (already exists)"
+    ((skipped++))
+    return
+  fi
+
+  case "$file" in
+    "_global.css")
+      cat > "$filepath" << 'GLOBAL_CSS'
+@layer reset, base, components, utilities;
+
+:root {
+  /* Spacing */
+
+  /* Text */
+
+  /* Borders */
+
+  /* Shadows */
+
+  /* Focus rings */
+
+  /* Easing functions from https://easings.net/ */
+
+  /* Layout */
+
+  /* Z-index */
+
+  /* Colors */
+}
+GLOBAL_CSS
+      ;;
+    "utilities.css")
+      cat > "$filepath" << 'UTILITIES_CSS'
+@layer utilities {
+  /* Text */
+
+  /* Flexbox and Grid */
+
+  /* Sizing */
+
+  /* Overflow */
+
+  /* Padding */
+
+  /* Margins */
+
+  /* Position */
+
+  /* Fills */
+
+  /* Borders */
+
+  /* Shadows */
+
+  /* Lists */
+
+  /* Accessibility */
+
+  /* Visibility */
+}
+UTILITIES_CSS
+      ;;
+    "reset.css")
+      cat > "$filepath" << 'RESET_CSS'
+@layer reset {
+  /*
+  * Modern CSS Reset
+  * @link https://github.com/hankchizljaw/modern-css-reset
+  */
+
+  /* Box sizing rules */
+  *,
+  *::before,
+  *::after {
+    box-sizing: border-box;
+  }
+
+  /* Remove default margin */
+  body,
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    margin: 0;
+  }
+
+  p,
+  li,
+  h1,
+  h2,
+  h3,
+  h4 {
+    /* Help prevent overflow of long words/names/URLs */
+    word-break: break-word;
+
+    /* Optional, not supported for all languages */
+    /* hyphens: auto; */
+  }
+
+  html,
+  body {
+    overflow-x: clip;
+  }
+
+  html {
+    /* scroll-behavior: smooth; */
+  }
+
+  /* Set core body defaults */
+  body {
+    min-height: 100dvh;
+    font-family: sans-serif;
+    font-size: 100%;
+    line-height: 1.5;
+    text-rendering: optimizeSpeed;
+  }
+
+  /* Make images easier to work with */
+  img {
+    display: block;
+    max-inline-size: 100%;
+  }
+
+  /* Inherit fonts for inputs and buttons */
+  input,
+  button,
+  textarea,
+  select {
+    font: inherit;
+  }
+
+  button {
+    cursor: pointer;
+  }
+
+  summary {
+    &::-webkit-details-marker {
+      display: none;
+    }
+
+    &::marker {
+      content: "";
+    }
+  }
+
+  /* Remove all animations and transitions for people that prefer not to see them */
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+      scroll-behavior: auto !important;
+    }
+
+    html {
+      scroll-behavior: initial;
+    }
+  }
+
+  dialog {
+    border: 0;
+    padding: 0;
+
+    &:where(:focus-visible):focus,
+    &:where(:focus-visible):active {
+      outline: 0;
+    }
+  }
+}
+RESET_CSS
+      ;;
+    "base.css")
+      cat > "$filepath" << 'BASE_CSS'
+/*
+ * Base styles for HTML elements.
+ * Builds on reset.css with your app's defaults.
+ */
+@layer base {
+  /* body {
+    background: var(--color-canvas);
+    color: var(--color-ink);
+    font-family: var(--font-sans);
+  } */
+
+  /* a {
+    color: var(--color-link);
+    text-decoration: underline;
+    text-decoration-skip-ink: auto;
+  } */
+
+  /* :focus-visible {
+    outline: var(--focus-ring);
+    outline-offset: 2px;
+  } */
+}
+BASE_CSS
+      ;;
+    "buttons.css")
+      cat > "$filepath" << 'BUTTONS_CSS'
+/*
+ * Button component styles.
+ */
+@layer components {
+  /* .btn {
+    align-items: center;
+    border-radius: 99rem;
+    border: 1px solid var(--color-ink-light);
+    cursor: pointer;
+    display: inline-flex;
+    font-weight: 600;
+    gap: 0.5em;
+    justify-content: center;
+    padding: 0.5em 1.1em;
+  } */
+
+  /* Variants */
+  /* .btn--primary {} */
+  /* .btn--secondary {} */
+  /* .btn--negative {} */
+}
+BUTTONS_CSS
+      ;;
+    "dialog.css")
+      cat > "$filepath" << 'DIALOG_CSS'
+/*
+ * Modal and dialog styles.
+ * Uses the native <dialog> element.
+ */
+@layer components {
+  /* .dialog {
+    border: 0;
+    border-radius: 0.5em;
+    padding: 1rem;
+  } */
+
+  /* .dialog::backdrop {
+    background-color: rgb(0 0 0 / 50%);
+  } */
+
+  /* .dialog[open] {
+    animation: fade-in 150ms ease-out;
+  } */
+}
+DIALOG_CSS
+      ;;
+    "flash.css")
+      cat > "$filepath" << 'FLASH_CSS'
+/*
+ * Rails flash message styles.
+ * Typically used for notice/alert messages.
+ */
+@layer components {
+  /* .flash {
+    inset-block-start: 1rem;
+    inset-inline-start: 50%;
+    position: fixed;
+    transform: translateX(-50%);
+    z-index: var(--z-flash);
+  } */
+
+  /* .flash--notice {} */
+  /* .flash--alert {} */
+}
+FLASH_CSS
+      ;;
+    "inputs.css")
+      cat > "$filepath" << 'INPUTS_CSS'
+/*
+ * Form input styles.
+ * Text inputs, selects, textareas, checkboxes, switches.
+ */
+@layer components {
+  /* Text inputs */
+  /* .input {
+    border-radius: 0.5em;
+    border: 1px solid var(--color-ink-medium);
+    font-size: max(16px, 1em);
+    padding: 0.5em 0.8em;
+    width: 100%;
+  } */
+
+  /* .input:focus {
+    outline: var(--focus-ring);
+    outline-offset: -1px;
+  } */
+
+  /* Select dropdowns */
+  /* .input--select {} */
+
+  /* Textareas */
+  /* .input--textarea {} */
+
+  /* Switches/toggles */
+  /* .switch {} */
+}
+INPUTS_CSS
+      ;;
+    "layout.css")
+      cat > "$filepath" << 'LAYOUT_CSS'
+/*
+ * Layout styles.
+ * Page structure, containers, grid systems.
+ */
+@layer base {
+  /* body {
+    display: grid;
+    grid-template-rows: auto 1fr auto;
+    min-height: 100dvh;
+  } */
+
+  /* #main {
+    margin-inline: auto;
+    max-inline-size: var(--main-width);
+    padding-inline: var(--main-padding);
+  } */
+}
+LAYOUT_CSS
+      ;;
+    "nav.css")
+      cat > "$filepath" << 'NAV_CSS'
+/*
+ * Navigation styles.
+ * Header nav, menus, mobile nav.
+ */
+@layer components {
+  /* .nav {} */
+
+  /* .nav__menu {} */
+
+  /* .nav__item {} */
+
+  /* .nav__link {} */
+}
+NAV_CSS
+      ;;
+  esac
+
+  echo "Created: $file"
+  ((created++))
+}
+
+for file in "${CSS_FILES[@]}"; do
+  create_file "$file"
+done
+
+echo ""
+echo "Done. Created $created file(s), skipped $skipped file(s)."
